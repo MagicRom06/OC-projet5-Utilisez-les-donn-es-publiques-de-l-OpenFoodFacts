@@ -7,7 +7,10 @@ def import_categories_on_db():
     all_categories = data.all()
     most_important_categories = data.filter(all_categories)
     for category in most_important_categories:
-        Category(category['name'], category['products'], category['url'], category['id']).save()
+        Category(category['name'],
+                 category['products'],
+                 category['url'],
+                 category['id']).save()
 
 
 def main():

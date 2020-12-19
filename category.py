@@ -38,9 +38,10 @@ class Category:
                 print(err)
         else:
             cur = cnx.cursor()
-            sql = """ INSERT INTO categories (name, count, url, url_id) VALUES (%s, %s, %s, %s) """
+            sql = """ INSERT INTO
+            categories (name, count, url, url_id)
+            VALUES (%s, %s, %s, %s) """
             val = (self.name, self.count, self.url, self.url_id)
             cur.execute(sql, val)
             cnx.commit()
             print(cur.rowcount, "record inserted.")
-

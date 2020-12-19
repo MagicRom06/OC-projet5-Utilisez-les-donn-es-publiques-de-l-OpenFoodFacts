@@ -27,5 +27,6 @@ class Data:
         :param data:list
         :return:list
         """
-        data = [x for x in sorted(data, key=lambda x: x['products'], reverse=True)][:4]
+        data = [x for x in sorted(data, key=lambda x: x['products'],
+                                  reverse=True)][:4]
         return data
