@@ -20,7 +20,7 @@ def import_stores_on_db():
     store_list = list()
     stores = Data('https://fr.openfoodfacts.org/stores.json').all()
     for store in stores:
-        store_list.append(store['name'])
+        store_list.append(store['id'])
     store_list = sorted(store_list)
     for elt in store_list:
         Store(elt).save()
@@ -39,7 +39,7 @@ def import_products_on_db():
                              'url': product['url'],
                              'description': product['ingredients_text_fr'],
                              'nutriscore': product['nutriscore_grade'],
-                             'stores': product['stores'],
+                             'stores': product['stores_tags'],
                              'categories': product['categories']})
 
     for elt in data:
@@ -49,14 +49,15 @@ def import_products_on_db():
                 elt['url'],
                 elt['description'],
                 elt['nutriscore'],
-                elt['stores'].split(',')[0],
+                elt['stores'],
                 elt['categories'].split(',')[0]).save()
 
 
 def main():
-    import_categories_on_db()
+    # import_stores_on_db()
+    # import_categories_on_db()
     import_products_on_db()
-    Database().delete_null_entries()
+    # Database().delete_null_entries()
 
 
 if __name__ == '__main__':

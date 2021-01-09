@@ -22,21 +22,26 @@ class Product:
         image, 
         url,
         description, 
-        nutriscore,
-        stores,
-        categories) 
-        VALUES (%s, %s, %s, %s, %s, %s, 
-        (SELECT id FROM stores WHERE name = %s LIMIT 1), 
-        (SELECT id FROM categories WHERE name = %s LIMIT 1)) """
+        nutriscore) 
+        VALUES (%s, %s, %s, %s, %s, %s) """
         val = (self.brands,
                self.name,
                self.image,
                self.url,
                self.description,
-               self.nutriscore,
-               self.stores,
-               self.categories)
+               self.nutriscore)
         cur.execute(sql, val)
-        print('execution requête sql')
+        last_product_id = cur.lastrowid
         cnx.commit()
-        print(cur.rowcount, "record inserted.")
+
+        if len(self.stores) > 0 and "intermarchė" not in self.stores:
+            print(self.stores)
+            for elt in self.stores:
+                if elt != "intermarche":
+                    print(elt)
+                    cur.execute("select id from stores where name = %s", (str(elt), ))
+                    id = cur.fetchone()[0]
+                    print(id, last_product_id)
+                    sql = """INSERT INTO store_product (store_id, product_id) VALUES (%s, %s)"""
+                    cur.execute(sql, (int(id), int(last_product_id)))
+                    cnx.commit()
