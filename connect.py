@@ -24,3 +24,16 @@ class Database:
             raise err
         else:
             return cnx
+
+    def load(self, table):
+        cnx = self.connect()
+        cur = cnx.cursor()
+        cur.execute(" SELECT * from " + table)
+        return cur.fetchall()
+
+    def delete_null_entries(self):
+        cnx = self.connect()
+        cur = cnx.cursor()
+        sql = "DELETE FROM products WHERE (stores is NULL OR stores = ' ') OR (categories is NULL OR categories = ' ')"
+        cur.execute(sql)
+        cnx.commit()

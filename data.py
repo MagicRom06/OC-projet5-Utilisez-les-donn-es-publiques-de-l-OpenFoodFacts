@@ -19,6 +19,8 @@ class Data:
         for key, value in data.items():
             if key == 'tags':
                 return value
+            elif key == 'products':
+                return value
 
     @staticmethod
     def filter(data):
@@ -28,5 +30,5 @@ class Data:
         :return:list
         """
         data = [x for x in sorted(data, key=lambda x: x['products'],
-                                  reverse=True)][:4]
+                                  reverse=True)][:30]
         return data

@@ -2,6 +2,7 @@ from category import Category
 from data import Data
 from connect import Database
 from store import Store
+from product import Product
 
 
 def import_categories_on_db():
@@ -25,16 +26,37 @@ def import_stores_on_db():
         Store(elt).save()
 
 
+def import_products_on_db():
+    data = list()
+    categories = Database().load('categories')
+    for category in categories:
+        products = Data(category[3] + '.json').all()
+        for product in products:
+            if 'stores' in product.keys() and 'nutriscore_grade' in product.keys() and 'ingredients_text_fr' in product.keys() and 'image_url' in product.keys():
+                data.append({'brands': product['brands'],
+                             'name': product['product_name'],
+                             'image': product['image_url'],
+                             'url': product['url'],
+                             'description': product['ingredients_text_fr'],
+                             'nutriscore': product['nutriscore_grade'],
+                             'stores': product['stores'],
+                             'categories': product['categories']})
+
+    for elt in data:
+        Product(elt['brands'],
+                elt['name'],
+                elt['image'],
+                elt['url'],
+                elt['description'],
+                elt['nutriscore'],
+                elt['stores'].split(',')[0],
+                elt['categories'].split(',')[0]).save()
+
+
 def main():
-    """
-    db = Database()
-    cnx = db.connect()
-    cur = cnx.cursor()
-    cur.execute(" SELECT * from categories")
-    categories = cur.fetchall()
-    print(categories)
-    """
-    import_stores_on_db()
+    import_categories_on_db()
+    import_products_on_db()
+    Database().delete_null_entries()
 
 
 if __name__ == '__main__':
