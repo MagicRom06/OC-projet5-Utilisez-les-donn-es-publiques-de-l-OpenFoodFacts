@@ -35,13 +35,21 @@ class Product:
         cnx.commit()
 
         if len(self.stores) > 0 and "intermarchė" not in self.stores:
-            print(self.stores)
             for elt in self.stores:
                 if elt != "intermarche":
-                    print(elt)
                     cur.execute("select id from stores where name = %s", (str(elt), ))
                     id = cur.fetchone()[0]
-                    print(id, last_product_id)
-                    sql = """INSERT INTO store_product (store_id, product_id) VALUES (%s, %s)"""
+                    sql = "INSERT INTO stores_products (store_id, product_id) VALUES (%s, %s)"
                     cur.execute(sql, (int(id), int(last_product_id)))
                     cnx.commit()
+
+        if len(self.categories) > 0:
+            for elt in self.categories:
+                try:
+                    cur.execute("select id from categories where url_id = %s", (str(elt), ))
+                    id = cur.fetchone()[0]
+                    sql = "INSERT INTO categories_products (category_id, product_id) VALUES (%s, %s)"
+                    cur.execute(sql, (int(id), int(last_product_id)))
+                    cnx.commit()
+                except:
+                    pass

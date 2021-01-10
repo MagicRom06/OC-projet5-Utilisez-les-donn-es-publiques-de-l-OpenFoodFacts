@@ -40,7 +40,7 @@ def import_products_on_db():
                              'description': product['ingredients_text_fr'],
                              'nutriscore': product['nutriscore_grade'],
                              'stores': product['stores_tags'],
-                             'categories': product['categories']})
+                             'categories': product['categories_tags']})
 
     for elt in data:
         Product(elt['brands'],
@@ -50,7 +50,7 @@ def import_products_on_db():
                 elt['description'],
                 elt['nutriscore'],
                 elt['stores'],
-                elt['categories'].split(',')[0]).save()
+                elt['categories']).save()
 
 
 def main():
