@@ -1,11 +1,14 @@
 from category import Category
-from data import Data
 from connect import Database
-from store import Store
+from data import Data
 from product import Product
+from store import Store
 
 
 def import_categories_on_db():
+    """
+    used for the 30 biggest categories importing on database
+    """
     data = Data('https://fr.openfoodfacts.org/categories.json')
     all_categories = data.all()
     most_important_categories = data.filter(all_categories)
@@ -17,6 +20,9 @@ def import_categories_on_db():
 
 
 def import_stores_on_db():
+    """
+    used for stores importing on database ordered by abc
+    """
     store_list = list()
     stores = Data('https://fr.openfoodfacts.org/stores.json').all()
     for store in stores:
@@ -27,37 +33,66 @@ def import_stores_on_db():
 
 
 def import_products_on_db():
-    data = list()
+    """
+    used for products importing on database
+    """
     categories = Database().load('categories')
     for category in categories:
         products = Data(category[3] + '.json').all()
         for product in products:
-            if 'stores' in product.keys() and 'nutriscore_grade' in product.keys() and 'ingredients_text_fr' in product.keys() and 'image_url' in product.keys():
-                data.append({'brands': product['brands'],
-                             'name': product['product_name'],
-                             'image': product['image_url'],
-                             'url': product['url'],
-                             'description': product['ingredients_text_fr'],
-                             'nutriscore': product['nutriscore_grade'],
-                             'stores': product['stores_tags'],
-                             'categories': product['categories_tags']})
+            if 'stores' in product.keys() \
+                    and 'nutriscore_grade' in product.keys() \
+                    and 'ingredients_text_fr' in product.keys() \
+                    and 'image_url' in product.keys():
+                Product(product['brands'],
+                        product['product_name'],
+                        product['image_url'],
+                        product['url'],
+                        product['ingredients_text_fr'],
+                        product['nutriscore_grade'],
+                        product['stores_tags'],
+                        product['categories_tags']).save()
+    Database().delete_entries_with_no_fk()
 
-    for elt in data:
-        Product(elt['brands'],
-                elt['name'],
-                elt['image'],
-                elt['url'],
-                elt['description'],
-                elt['nutriscore'],
-                elt['stores'],
-                elt['categories']).save()
+
+def find_stores(id):
+    """
+    used for getting stores from product id
+    return list of stores
+    """
+    stores = list()
+    cnx = Database().connect()
+    cur = cnx.cursor()
+    cur.execute(""" select store_id from stores_products
+    where product_id = %s""", (id,))
+    store_id = cur.fetchall()
+    for elt in store_id:
+        cur.execute("select * from stores where id = %s", (elt[0],))
+        store = cur.fetchall()
+        stores.append(store)
+    return stores
+
+
+def find_categories(id):
+    """
+    used for getting categories from product id
+    return list of categories
+    """
+    categories = list()
+    cnx = Database().connect()
+    cur = cnx.cursor()
+    cur.execute(""" select category_id from categories_products
+    where product_id = %s""", (id,))
+    category_id = cur.fetchall()
+    for elt in category_id:
+        cur.execute("select id, name from categories where id = %s", (elt[0],))
+        category = cur.fetchall()
+        categories.append(category)
+    return categories
 
 
 def main():
-    # import_stores_on_db()
-    # import_categories_on_db()
     import_products_on_db()
-    # Database().delete_null_entries()
 
 
 if __name__ == '__main__':

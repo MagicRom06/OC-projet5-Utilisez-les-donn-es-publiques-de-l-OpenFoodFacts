@@ -9,8 +9,8 @@ class Data:
 
     def all(self):
         """
-        method to get all the data from API
-        :return:list
+        method for getting all the data from API
+        return list of all api data selected
         """
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         url = self.url
@@ -26,8 +26,7 @@ class Data:
     def filter(data):
         """
         filter data to get only the four biggest categories
-        :param data:list
-        :return:list
+        return list of filtered categories
         """
         data = [x for x in sorted(data, key=lambda x: x['products'],
                                   reverse=True)][:30]

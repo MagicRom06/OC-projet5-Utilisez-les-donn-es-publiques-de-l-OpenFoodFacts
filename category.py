@@ -15,7 +15,7 @@ class Category:
 
     def save(self):
         """
-        method to insert data into mysql database
+        method for inserting data into mysql database
         """
         db = Database()
         cnx = db.connect()
