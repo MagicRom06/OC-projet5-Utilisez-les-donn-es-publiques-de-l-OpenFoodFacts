@@ -68,3 +68,53 @@ class Product:
                     (category_id, product_id) VALUES (%s, %s) """
                     cur.execute(sql, (int(id), int(last_product_id)))
                     cnx.commit()
+
+    @staticmethod
+    def load(category):
+        db = Database()
+        cnx = db.connect()
+        cur = cnx.cursor(buffered=True)
+        products = list()
+        categories = list()
+        cur.execute("""select product_id from categories_products
+                        inner join categories
+                         on categories_products.category_id = categories.id
+                         where categories.id = %s""", (category,))
+        product_id = cur.fetchall()
+        for id in product_id:
+            cur.execute('select * from products where id = %s', (id[0],))
+            products.append(cur.fetchall())
+        return products
+
+    @staticmethod
+    def add_categories(products):
+        db = Database()
+        cnx = db.connect()
+        cur = cnx.cursor(buffered=True)
+        for product in products:
+            categories_id_list = list()
+            categories = list()
+            cur.execute("""select category_id from categories_products
+            inner join products
+            on categories_products.product_id = products.id
+            where product_id = %s""", (product[0][0], ))
+            category_id = cur.fetchall()
+            for id in category_id:
+                categories_id_list.append(id[0])
+            product.append(categories_id_list)
+            for elt in product[1]:
+                cur.execute("""select name from categories where id = %s""", (elt, ))
+                categories.append(cur.fetchone()[0])
+            product.append(categories)
+            del(product[1])
+        return products
+
+    @staticmethod
+    def display(products):
+        products_dict = dict()
+        i = 1
+        for product in products:
+            products_dict[i] = product
+            i += 1
+        for key, value in products_dict.items():
+            print('{} - {} - {}'.format(key, value[0][6], value[0][1]))

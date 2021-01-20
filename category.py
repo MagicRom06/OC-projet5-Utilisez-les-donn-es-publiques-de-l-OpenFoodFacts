@@ -27,3 +27,18 @@ class Category:
         cur.execute(sql, val)
         cnx.commit()
         print(cur.rowcount, "record inserted.")
+
+    @staticmethod
+    def load():
+        categories = Database().load('categories')
+        i = 1
+        categories_dict = dict()
+        for category in categories:
+            categories_dict[i] = category
+            i += 1
+        return categories_dict
+
+    @staticmethod
+    def display():
+        for key, value in Category.load().items():
+            print('{} - {}'.format(key, value[1]))

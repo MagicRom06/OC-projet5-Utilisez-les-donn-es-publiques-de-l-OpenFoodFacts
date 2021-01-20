@@ -5,6 +5,7 @@ class Database:
     """
     Class used for interacting with the database
     """
+
     def __init__(self):
         self.config = {
             'user': 'root',
@@ -56,7 +57,8 @@ class Database:
         for product in all_products:
             if product not in product_id:
                 cur.execute(""" delete from categories_products
-                                where product_id = %s""", (product[0], ))
+                                where product_id = %s""", (product[0],))
                 cur.execute("delete from products where id = %s",
                             (product[0],))
                 cnx.commit()
+

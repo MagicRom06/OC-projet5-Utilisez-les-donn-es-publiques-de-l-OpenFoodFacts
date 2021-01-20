@@ -3,6 +3,7 @@ from connect import Database
 from data import Data
 from product import Product
 from store import Store
+from interface_user import InterfaceUser
 
 
 def import_categories_on_db():
@@ -52,47 +53,10 @@ def import_products_on_db():
                         product['nutriscore_grade'],
                         product['stores_tags'],
                         product['categories_tags']).save()
-    Database().delete_entries_with_no_fk()
-
-
-def find_stores(id):
-    """
-    used for getting stores from product id
-    return list of stores
-    """
-    stores = list()
-    cnx = Database().connect()
-    cur = cnx.cursor()
-    cur.execute(""" select store_id from stores_products
-    where product_id = %s""", (id,))
-    store_id = cur.fetchall()
-    for elt in store_id:
-        cur.execute("select * from stores where id = %s", (elt[0],))
-        store = cur.fetchall()
-        stores.append(store)
-    return stores
-
-
-def find_categories(id):
-    """
-    used for getting categories from product id
-    return list of categories
-    """
-    categories = list()
-    cnx = Database().connect()
-    cur = cnx.cursor()
-    cur.execute(""" select category_id from categories_products
-    where product_id = %s""", (id,))
-    category_id = cur.fetchall()
-    for elt in category_id:
-        cur.execute("select id, name from categories where id = %s", (elt[0],))
-        category = cur.fetchall()
-        categories.append(category)
-    return categories
 
 
 def main():
-    import_products_on_db()
+    InterfaceUser().play()
 
 
 if __name__ == '__main__':
