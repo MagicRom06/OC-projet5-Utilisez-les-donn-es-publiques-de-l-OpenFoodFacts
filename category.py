@@ -17,15 +17,13 @@ class Category:
         """
         method for inserting data into mysql database
         """
-        db = Database()
-        cnx = db.connect()
-        cur = cnx.cursor()
+        cur = Database.createCursor()
         sql = """ INSERT INTO
             categories (name, count, url, url_id)
             VALUES (%s, %s, %s, %s) """
         val = (self.name, self.count, self.url, self.url_id)
         cur.execute(sql, val)
-        cnx.commit()
+        Database.databaseConnection.commit()
         print(cur.rowcount, "record inserted.")
 
     @staticmethod
@@ -39,6 +37,6 @@ class Category:
         return categories_dict
 
     @staticmethod
-    def display():
+    def display_list():
         for key, value in Category.load().items():
             print('{} - {}'.format(key, value[1]))

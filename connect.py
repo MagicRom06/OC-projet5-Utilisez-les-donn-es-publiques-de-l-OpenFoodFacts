@@ -5,23 +5,20 @@ class Database:
     """
     Class used for interacting with the database
     """
+    databaseConnection = None
 
-    def __init__(self):
-        self.config = {
-            'user': 'root',
-            'password': 'root',
-            'host': '127.0.0.1',
-            'database': 'openfoodfacts',
-            'raise_on_warnings': True
-        }
-
-    def connect(self):
+    @staticmethod
+    def connect():
         """
         Used for the database connexion
         return cnx or err if an error occured
         """
         try:
-            cnx = connect(**self.config)
+            cnx = connect(user='root',
+                          password='root',
+                          host='127.0.0.1',
+                          database='openfoodfacts',
+                          raise_on_warnings=True)
         except Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
@@ -31,25 +28,34 @@ class Database:
                 print(err)
             raise err
         else:
-            return cnx
+            Database.databaseConnection = cnx
 
-    def load(self, table):
+    @staticmethod
+    def disconnect():
+        Database.databaseConnection.close()
+        Database.databaseConnection = None
+
+    @staticmethod
+    def createCursor():
+        return Database.databaseConnection.cursor()
+
+    @staticmethod
+    def load(table):
         """
         Used for load table from database
         return all the data from the selected table
         """
-        cnx = self.connect()
-        cur = cnx.cursor()
+        cur = Database.createCursor()
         cur.execute(" SELECT * from " + table)
         return cur.fetchall()
 
-    def delete_entries_with_no_fk(self):
+    @staticmethod
+    def delete_entries_with_no_fk():
         """
         Used for deleting all products row
         with no stores and categories foreign keys
         """
-        cnx = self.connect()
-        cur = cnx.cursor()
+        cur = Database.createCursor()
         cur.execute('select product_id from stores_products')
         product_id = cur.fetchall()
         cur.execute('select id from products')
@@ -60,5 +66,4 @@ class Database:
                                 where product_id = %s""", (product[0],))
                 cur.execute("delete from products where id = %s",
                             (product[0],))
-                cnx.commit()
-
+                Database.databaseConnection.commit()

@@ -12,11 +12,9 @@ class Store:
         """
         Used for inserting stores on database
         """
-        db = Database()
-        cnx = db.connect()
-        cur = cnx.cursor()
+        cur = Database.createCursor()
         sql = """ INSERT INTO stores (name) VALUES (%s) """
         val = (self.name, )
         cur.execute(sql, val)
-        cnx.commit()
+        Database.databaseConnection.commit()
         print(cur.rowcount, "record inserted.")
