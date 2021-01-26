@@ -1,10 +1,10 @@
 from connect import Database
+from data import Data
 
 
 class Category:
     """
-    Class used to get categories data from openfoodfacts data,
-    and insert it to mysql database
+    managing categories
     """
 
     def __init__(self, name, count, url, url_id):
@@ -12,6 +12,20 @@ class Category:
         self.count = count
         self.url = url
         self.url_id = url_id
+
+    @staticmethod
+    def importing():
+        """
+        used for the 30 biggest categories importing on database
+        """
+        data = Data('https://fr.openfoodfacts.org/categories.json')
+        all_categories = data.load()
+        most_important_categories = data.filter(all_categories)
+        for category in most_important_categories:
+            Category(category['name'],
+                     category['products'],
+                     category['url'],
+                     category['id']).save()
 
     def save(self):
         """
@@ -28,6 +42,9 @@ class Category:
 
     @staticmethod
     def load():
+        """
+        used to load categories on a dict
+        """
         categories = Database().load('categories')
         i = 1
         categories_dict = dict()
@@ -37,6 +54,21 @@ class Category:
         return categories_dict
 
     @staticmethod
-    def display_list():
+    def listing():
+        """
+        display categories on a bulleted list
+        """
         for key, value in Category.load().items():
             print('{} - {}'.format(key, value[1]))
+
+    @staticmethod
+    def load_from_id(product_id):
+        """
+        find categories from a product id
+        """
+        cur = Database.createCursor()
+        cur.execute("""select name from categories
+        inner join categories_products
+        on categories.id = categories_products.category_id
+        where product_id = %s""", (product_id, ))
+        return [''.join(x) for x in cur.fetchall()]

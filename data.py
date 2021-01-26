@@ -7,7 +7,7 @@ class Data:
     def __init__(self, url):
         self.url = url
 
-    def all(self):
+    def load(self):
         """
         method for getting all the data from API
         return list of all api data selected

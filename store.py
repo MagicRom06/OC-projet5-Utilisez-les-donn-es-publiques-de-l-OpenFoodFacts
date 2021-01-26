@@ -1,12 +1,26 @@
 from connect import Database
+from data import Data
 
 
 class Store:
     """
-    Used for importing stores
+    managing stores
     """
     def __init__(self, name):
         self.name = name
+
+    @staticmethod
+    def importing():
+        """
+        used for stores importing on database ordered by abc
+        """
+        store_list = list()
+        stores = Data('https://fr.openfoodfacts.org/stores.json').load()
+        for store in stores:
+            store_list.append(store['id'])
+        store_list = sorted(store_list)
+        for elt in store_list:
+            Store(elt).save()
 
     def save(self):
         """
@@ -18,3 +32,15 @@ class Store:
         cur.execute(sql, val)
         Database.databaseConnection.commit()
         print(cur.rowcount, "record inserted.")
+
+    @staticmethod
+    def load_from_id(product_id):
+        """
+        load stores from product id
+        """
+        cur = Database.createCursor()
+        cur.execute("""select name from stores
+        inner join stores_products
+        on stores.id = stores_products.store_id
+        where product_id = %s""", (product_id,))
+        return [''.join(x) for x in cur.fetchall()]

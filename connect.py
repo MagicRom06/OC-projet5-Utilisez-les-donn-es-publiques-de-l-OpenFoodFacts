@@ -32,12 +32,18 @@ class Database:
 
     @staticmethod
     def disconnect():
+        """
+        disconnect database
+        """
         Database.databaseConnection.close()
         Database.databaseConnection = None
 
     @staticmethod
     def createCursor():
-        return Database.databaseConnection.cursor()
+        """
+        create cursor
+        """
+        return Database.databaseConnection.cursor(buffered=True)
 
     @staticmethod
     def load(table):

@@ -1,12 +1,16 @@
+from category import Category
 from connect import Database
+from data import Data
+from store import Store
 
 
 class Product:
     """
-    Used for importing products on database
+    managing products
     """
 
     def __init__(self,
+                 id,
                  brands,
                  name,
                  image,
@@ -15,6 +19,7 @@ class Product:
                  nutriscore,
                  stores,
                  categories):
+        self.id = id
         self.brands = brands
         self.name = name
         self.image = image
@@ -23,6 +28,28 @@ class Product:
         self.nutriscore = nutriscore
         self.stores = stores
         self.categories = categories
+
+    @staticmethod
+    def importing():
+        """
+        used for products importing on database
+        """
+        categories = Database().load('categories')
+        for category in categories:
+            products = Data(category[3] + '.json').load()
+            for product in products:
+                if 'stores' in product.keys() \
+                        and 'nutriscore_grade' in product.keys() \
+                        and 'ingredients_text_fr' in product.keys() \
+                        and 'image_url' in product.keys():
+                    Product(product['brands'],
+                            product['product_name'],
+                            product['image_url'],
+                            product['url'],
+                            product['ingredients_text_fr'],
+                            product['nutriscore_grade'],
+                            product['stores_tags'],
+                            product['categories_tags']).save()
 
     def save(self):
         """
@@ -69,60 +96,73 @@ class Product:
                     Database.databaseConnection.commit()
 
     @staticmethod
-    def load(category):
-        final_list_product = list()
-        i = 1
+    def get(product_id):
+        """
+        get product from a product id
+        """
         cur = Database.createCursor()
-        cur.execute("""select product_id from categories_products
-                        inner join categories
-                         on categories_products.category_id = categories.id
-                         where categories.id = %s""", (category,))
-        product_id = cur.fetchall()
-        for id in product_id:
-            product_details = list()
-            products_list = list()
-            product_with_id = dict()
-            cur.execute('select * from products where id = %s', (id[0],))
-            product = cur.fetchall()
-            cur.execute("""select name from categories
-            inner join categories_products
-            on categories.id = categories_products.category_id
-            where categories_products.product_id = %s""", (id[0],))
-            categories = cur.fetchall()
-            cur.execute("""select name from stores
-            inner join stores_products
-            on stores.id = stores_products.store_id
-            where stores_products.product_id = %s""", (id[0],))
-            stores = cur.fetchall()
-            product_details.append(product)
-            product_details.append(categories)
-            product_details.append(stores)
-            products_list.append(product_details)
-            for elt in products_list:
-                product_with_id['id'] = i
-                product_with_id['product'] = elt
-                i += 1
-            final_list_product.append(product_with_id)
-        return final_list_product
+        cur.execute("""select * from products WHERE id = %s """, (product_id,))
+        product = cur.fetchone()
+        return Product(product[0],
+                       product[6],
+                       product[1],
+                       product[2],
+                       product[3],
+                       product[5],
+                       product[4],
+                       None,
+                       None)
 
     @staticmethod
-    def display_list(products):
+    def listing(products):
+        """
+        display bulleted list of products
+        """
         for product in products:
-            print('{} - {} - {}'.format(product['id'], product['product'][0][0][6], product['product'][0][0][1]))
+            print('{} - {} - {}'.format(product['id'],
+                                        product['product'].brands,
+                                        product['product'].name))
 
-    def display_one(self):
-        print('Marque : {}\n'
+    @staticmethod
+    def load(category):
+        """
+        load products from a specific categories
+        """
+        products_with_id = list()
+        i = 1
+        cur = Database.createCursor()
+        cur.execute("""SELECT product_id
+                        FROM categories_products
+                        WHERE category_id = %s""", (category,))
+        product_id = cur.fetchall()
+        for id in product_id:
+            products = dict()
+            products['id'] = i
+            products['product'] = Product.get(id[0])
+            i += 1
+            products_with_id.append(products)
+        return products_with_id
+
+    def display(self):
+        """
+        displaying product
+        """
+        print('**********************\n'
+              'id : {}\n'
+              'Marque : {}\n'
               'Nom: {}\n'
               'Image: {}\n'
               'Url: {}\n'
               'Description: {}\n'
               'Nutriscore: {}\n'
               'Magasins: {}\n'
-              'Catégories: {}'.format(self.brands,
-                                      self.name,
-                                      self.image,
-                                      self.url,
-                                      self.description,
-                                      self.nutriscore,
-                                      ', '.join(''.join(elt) for elt in self.stores),
-                                      ', '.join(''.join(elt) for elt in self.categories)))
+              'Catégories: {}\n'
+              '**********************'.format(self.id,
+                                              self.brands,
+                                              self.name,
+                                              self.image,
+                                              self.url,
+                                              self.description,
+                                              self.nutriscore,
+                                              Store.load_from_id(self.id),
+                                              Category.load_from_id(self.id)))
