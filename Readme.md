@@ -18,3 +18,10 @@ le Choix 3 permet de quitter le programme
 ## Prérequis
 
 Le programme utilise python 3
+
+## Lancement du programme
+
+git clone https://github.com/MagicRom06/OC-projet5-Utilisez-les-donn-es-publiques-de-l-OpenFoodFacts <br>
+Pour activer l'environnement virtuel une fois dans le repertoire, executer la commande pipenv shell<br>
+exécuter la commande "pipenv update"<br>
+Une fois dans le répertoire principal, exécuter python main.py<br>
