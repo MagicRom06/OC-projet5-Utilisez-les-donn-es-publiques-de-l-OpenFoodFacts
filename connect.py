@@ -62,14 +62,22 @@ class Database:
         with no stores and categories foreign keys
         """
         cur = Database.createCursor()
-        cur.execute('select product_id from stores_products')
+        cur.execute("""
+        SELECT product_id
+        FROM stores_products""")
         product_id = cur.fetchall()
-        cur.execute('select id from products')
+        cur.execute("""
+        SELECT id
+        FROM products""")
         all_products = cur.fetchall()
         for product in all_products:
             if product not in product_id:
-                cur.execute(""" delete from categories_products
-                                where product_id = %s""", (product[0],))
-                cur.execute("delete from products where id = %s",
-                            (product[0],))
+                cur.execute("""
+                DELETE
+                FROM categories_products
+                WHERE product_id = %s""", (product[0],))
+                cur.execute("""
+                DELETE
+                FROM products
+                WHERE id = %s""", (product[0],))
                 Database.databaseConnection.commit()

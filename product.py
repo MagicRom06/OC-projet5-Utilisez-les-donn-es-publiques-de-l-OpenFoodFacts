@@ -101,7 +101,10 @@ class Product:
         get product from a product id
         """
         cur = Database.createCursor()
-        cur.execute("""select * from products WHERE id = %s """, (product_id,))
+        cur.execute("""
+        SELECT *
+        FROM products
+        WHERE id = %s """, (product_id,))
         product = cur.fetchone()
         return Product(product[0],
                        product[6],
@@ -147,22 +150,24 @@ class Product:
         """
         displaying product
         """
-        print('**********************\n'
-              'id : {}\n'
-              'Marque : {}\n'
-              'Nom: {}\n'
-              'Image: {}\n'
-              'Url: {}\n'
-              'Description: {}\n'
-              'Nutriscore: {}\n'
-              'Magasins: {}\n'
-              'Catégories: {}\n'
-              '**********************'.format(self.id,
-                                              self.brands,
-                                              self.name,
-                                              self.image,
-                                              self.url,
-                                              self.description,
-                                              self.nutriscore,
-                                              Store.load_from_id(self.id),
-                                              Category.load_from_id(self.id)))
+        return ('**********************\n'
+                'id : {}\n'
+                'Marque : {}\n'
+                'Nom: {}\n'
+                'Image: {}\n'
+                'Url: {}\n'
+                'Description: {}\n'
+                'Nutriscore: {}\n'
+                'Magasins: {}\n'
+                'Catégories: {}\n'
+                '**********************'.format(self.id,
+                                                self.brands,
+                                                self.name,
+                                                self.image,
+                                                self.url,
+                                                self.description,
+                                                self.nutriscore,
+                                                Store.load_from_id(
+                                                    self.id),
+                                                Category.load_from_id(
+                                                    self.id)))

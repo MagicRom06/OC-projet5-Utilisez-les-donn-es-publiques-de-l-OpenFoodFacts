@@ -8,6 +8,7 @@ class InterfaceUser:
     """
     used for display user choices
     """
+
     def __init__(self):
         self.user_product = None
 
@@ -46,9 +47,30 @@ class InterfaceUser:
                 for product in products:
                     if product_user == product['id']:
                         self.user_product = product['product']
-                        product['product'].display()
-                substitute = Substitute(self.user_product).find()
-                print(substitute)
+                        print(product['product'].display())
+                substituts = Substitute.find(self.user_product)
+                Substitute.listing(substituts)
+                substitut_user = input(
+                    'Voulez-vous enregistrer un substitut ?\n:')
+                try:
+                    substitut_user = int(substitut_user)
+                    assert 0 < substitut_user <= len(substituts)
+                except ValueError:
+                    print('erreur valeur')
+                    return self.find_substitute()
+                except AssertionError:
+                    print('erreur assertion')
+                    return self.find_substitute()
+                for product in substituts:
+                    if substitut_user == product['id']:
+                        Substitute(product['product'].id,
+                                   product['product'].brands,
+                                   product['product'].name,
+                                   product['product'].image,
+                                   product['product'].url,
+                                   product['product'].description,
+                                   product['product'].nutriscore).save()
+                        print('Produit sauvegardé')
 
     def play(self):
         """
@@ -70,7 +92,17 @@ class InterfaceUser:
             self.find_substitute()
             Database.disconnect()
         elif user == 2:
-            print(user)
+            products = Substitute.load()
+            for product in products:
+                print(Product(product[1],
+                              product[2],
+                              product[3],
+                              product[4],
+                              product[5],
+                              product[6],
+                              product[7],
+                              None,
+                              None).display())
         elif user == 3:
             print('You\'re leaving the programm')
             Database.disconnect()

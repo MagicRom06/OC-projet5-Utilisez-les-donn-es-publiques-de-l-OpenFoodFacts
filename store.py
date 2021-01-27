@@ -27,7 +27,10 @@ class Store:
         Used for inserting stores on database
         """
         cur = Database.createCursor()
-        sql = """ INSERT INTO stores (name) VALUES (%s) """
+        sql = """
+        INSERT
+        INTO stores (name)
+        VALUES (%s) """
         val = (self.name, )
         cur.execute(sql, val)
         Database.databaseConnection.commit()
@@ -39,8 +42,10 @@ class Store:
         load stores from product id
         """
         cur = Database.createCursor()
-        cur.execute("""select name from stores
-        inner join stores_products
-        on stores.id = stores_products.store_id
-        where product_id = %s""", (product_id,))
+        cur.execute("""
+        SELECT name
+        FROM stores
+        INNER JOIN stores_products
+            ON stores.id = stores_products.store_id
+        WHERE product_id = %s""", (product_id,))
         return [''.join(x) for x in cur.fetchall()]

@@ -32,9 +32,10 @@ class Category:
         method for inserting data into mysql database
         """
         cur = Database.createCursor()
-        sql = """ INSERT INTO
-            categories (name, count, url, url_id)
-            VALUES (%s, %s, %s, %s) """
+        sql = """
+        INSERT INTO
+        categories (name, count, url, url_id)
+        VALUES (%s, %s, %s, %s)"""
         val = (self.name, self.count, self.url, self.url_id)
         cur.execute(sql, val)
         Database.databaseConnection.commit()
@@ -67,8 +68,10 @@ class Category:
         find categories from a product id
         """
         cur = Database.createCursor()
-        cur.execute("""select name from categories
-        inner join categories_products
-        on categories.id = categories_products.category_id
-        where product_id = %s""", (product_id, ))
+        cur.execute("""
+        SELECT name
+        FROM categories
+        INNER JOIN categories_products
+            ON categories.id = categories_products.category_id
+        WHERE product_id = %s""", (product_id, ))
         return [''.join(x) for x in cur.fetchall()]
