@@ -7,7 +7,8 @@ class Category:
     managing categories
     """
 
-    def __init__(self, name, count, url, url_id):
+    def __init__(self, id, name, count, url, url_id):
+        self.id = id
         self.name = name
         self.count = count
         self.url = url
@@ -22,7 +23,8 @@ class Category:
         all_categories = data.load()
         most_important_categories = data.filter(all_categories)
         for category in most_important_categories:
-            Category(category['name'],
+            Category(None,
+                     category['name'],
                      category['products'],
                      category['url'],
                      category['id']).save()
@@ -40,6 +42,7 @@ class Category:
         cur.execute(sql, val)
         Database.databaseConnection.commit()
         print(cur.rowcount, "record inserted.")
+        cur.close()
 
     @staticmethod
     def load():
@@ -50,7 +53,11 @@ class Category:
         i = 1
         categories_dict = dict()
         for category in categories:
-            categories_dict[i] = category
+            categories_dict[i] = Category(category[0],
+                                          category[1],
+                                          category[2],
+                                          category[3],
+                                          category[4])
             i += 1
         return categories_dict
 
@@ -60,7 +67,7 @@ class Category:
         display categories on a bulleted list
         """
         for key, value in Category.load().items():
-            print('{} - {}'.format(key, value[1]))
+            print('{} - {}'.format(key, value.name))
 
     @staticmethod
     def load_from_id(product_id):
@@ -74,4 +81,7 @@ class Category:
         INNER JOIN categories_products
             ON categories.id = categories_products.category_id
         WHERE product_id = %s""", (product_id, ))
-        return [''.join(x) for x in cur.fetchall()]
+        cur.close()
+        categories = [''.join(x) for x in cur.fetchall()]
+        cur.close()
+        return categories

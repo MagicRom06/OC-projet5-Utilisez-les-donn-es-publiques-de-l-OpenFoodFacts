@@ -73,6 +73,7 @@ class Product:
         cur.execute(sql, val)
         last_product_id = cur.lastrowid
         Database.databaseConnection.commit()
+        cur.close()
 
         if len(self.stores) > 0 and len(self.categories) > 0:
             for elt in self.stores:
@@ -84,6 +85,7 @@ class Product:
                     (store_id, product_id) VALUES (%s, %s)"""
                     cur.execute(sql, (int(id), int(last_product_id)))
                     Database.databaseConnection.commit()
+                    cur.close()
 
             for elt in self.categories:
                 cur.execute(""" select id from categories
@@ -94,6 +96,7 @@ class Product:
                     (category_id, product_id) VALUES (%s, %s) """
                     cur.execute(sql, (int(id), int(last_product_id)))
                     Database.databaseConnection.commit()
+                    cur.close()
 
     @staticmethod
     def get(product_id):
@@ -106,15 +109,17 @@ class Product:
         FROM products
         WHERE id = %s """, (product_id,))
         product = cur.fetchone()
-        return Product(product[0],
-                       product[6],
-                       product[1],
-                       product[2],
-                       product[3],
-                       product[5],
-                       product[4],
-                       None,
-                       None)
+        products = Product(product[0],
+                           product[6],
+                           product[1],
+                           product[2],
+                           product[3],
+                           product[5],
+                           product[4],
+                           None,
+                           None)
+        cur.close()
+        return products
 
     @staticmethod
     def listing(products):
@@ -144,6 +149,7 @@ class Product:
             products['product'] = Product.get(id[0])
             i += 1
             products_with_id.append(products)
+        cur.close()
         return products_with_id
 
     def display(self):

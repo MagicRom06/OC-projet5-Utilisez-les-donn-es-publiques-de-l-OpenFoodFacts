@@ -32,7 +32,7 @@ class InterfaceUser:
             if int(category_user) == id:
 
                 # load and display products
-                products = Product.load(category[0])
+                products = Product.load(category.id)  # A modifier
                 print('Sélectionnez un produit:')
                 Product.listing(products)
                 product_user = input(':')
@@ -63,13 +63,7 @@ class InterfaceUser:
                     return self.find_substitute()
                 for product in substituts:
                     if substitut_user == product['id']:
-                        Substitute(product['product'].id,
-                                   product['product'].brands,
-                                   product['product'].name,
-                                   product['product'].image,
-                                   product['product'].url,
-                                   product['product'].description,
-                                   product['product'].nutriscore).save()
+                        Substitute(product['product'].id, self.user_product.id).save()
                         print('Produit sauvegardé')
 
     def play(self):
@@ -94,15 +88,7 @@ class InterfaceUser:
         elif user == 2:
             products = Substitute.load()
             for product in products:
-                print(Product(product[1],
-                              product[2],
-                              product[3],
-                              product[4],
-                              product[5],
-                              product[6],
-                              product[7],
-                              None,
-                              None).display())
+                print(Product.get(product[0]).display())
         elif user == 3:
             print('You\'re leaving the programm')
             Database.disconnect()

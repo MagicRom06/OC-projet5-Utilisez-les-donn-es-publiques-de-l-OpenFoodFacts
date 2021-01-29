@@ -53,7 +53,9 @@ class Database:
         """
         cur = Database.createCursor()
         cur.execute(" SELECT * from " + table)
-        return cur.fetchall()
+        entries = cur.fetchall()
+        cur.close()
+        return entries
 
     @staticmethod
     def delete_entries_with_no_fk():
@@ -81,3 +83,4 @@ class Database:
                 FROM products
                 WHERE id = %s""", (product[0],))
                 Database.databaseConnection.commit()
+        cur.close()

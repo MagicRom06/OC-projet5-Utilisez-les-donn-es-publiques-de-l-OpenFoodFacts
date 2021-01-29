@@ -35,6 +35,7 @@ class Store:
         cur.execute(sql, val)
         Database.databaseConnection.commit()
         print(cur.rowcount, "record inserted.")
+        cur.close()
 
     @staticmethod
     def load_from_id(product_id):
@@ -48,4 +49,6 @@ class Store:
         INNER JOIN stores_products
             ON stores.id = stores_products.store_id
         WHERE product_id = %s""", (product_id,))
-        return [''.join(x) for x in cur.fetchall()]
+        stores = [''.join(x) for x in cur.fetchall()]
+        cur.close()
+        return stores

@@ -8,21 +8,9 @@ class Substitute:
     class used to manage substitute
     """
 
-    def __init__(self,
-                 product_id,
-                 brands,
-                 name,
-                 image,
-                 url,
-                 description,
-                 nutriscore):
+    def __init__(self, id, product_id):
+        self.id = id
         self.product_id = product_id
-        self.brands = brands
-        self.name = name
-        self.image = image
-        self.url = url
-        self.description = description
-        self.nutriscore = nutriscore
 
     @staticmethod
     def find(user_product):
@@ -49,6 +37,7 @@ class Substitute:
             substituts_with_id['product'] = Product.get(elt[0])
             substitute.append(substituts_with_id)
             i += 1
+        cur.close()
         return substitute
 
     @staticmethod
@@ -66,28 +55,19 @@ class Substitute:
         """
         cur = Database.createCursor()
         sql = """
-        INSERT INTO substitutes (
-        product_id,
-        brands,
-        name,
-        image,
-        url,
-        description,
-        nutriscore)
-        VALUES (%s, %s, %s, %s, %s, %s, %s) """
-        val = (self.product_id,
-               self.brands,
-               self.name,
-               self.image,
-               self.url,
-               self.description,
-               self.nutriscore)
+        INSERT INTO substitutes_products (
+        substitute_id,
+        product_id)
+        VALUES (%s, %s) """
+        val = (self.id,
+               self.product_id)
         cur.execute(sql, val)
         Database.databaseConnection.commit()
+        cur.close()
 
     @staticmethod
     def load():
         """
         load all entries of subsitutes table
         """
-        return Database.load('substitutes')
+        return Database.load('substitutes_products')
