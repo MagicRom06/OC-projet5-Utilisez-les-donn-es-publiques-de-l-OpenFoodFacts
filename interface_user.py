@@ -1,8 +1,8 @@
 from category import Category
 from connect import Database
 from product import Product
-from substitute import Substitute
 from store import Store
+from substitute import Substitute
 
 
 class InterfaceUser:
@@ -74,7 +74,8 @@ class InterfaceUser:
                     # if yes he has to choose a substitut
                     if self.save_substitute():
                         substitut_user = input(
-                            'Veuillez indiquer le chiffre correspondant au produit\n:')
+                            'Veuillez indiquer le'
+                            'chiffre correspondant au produit\n:')
                         try:
                             substitut_user = int(substitut_user)
                             assert 0 < substitut_user <= len(substituts)
