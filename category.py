@@ -42,7 +42,6 @@ class Category:
         cur.execute(sql, val)
         Database.databaseConnection.commit()
         print(cur.rowcount, "record inserted.")
-        cur.close()
 
     @staticmethod
     def load():
@@ -83,5 +82,4 @@ class Category:
         WHERE product_id = %s""", (product_id, ))
         cur.close()
         categories = [''.join(x) for x in cur.fetchall()]
-        cur.close()
         return categories

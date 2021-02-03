@@ -42,7 +42,8 @@ class Product:
                         and 'nutriscore_grade' in product.keys() \
                         and 'ingredients_text_fr' in product.keys() \
                         and 'image_url' in product.keys():
-                    Product(product['brands'],
+                    Product(None,
+                            product['brands'],
                             product['product_name'],
                             product['image_url'],
                             product['url'],
@@ -73,7 +74,6 @@ class Product:
         cur.execute(sql, val)
         last_product_id = cur.lastrowid
         Database.databaseConnection.commit()
-        cur.close()
 
         if len(self.stores) > 0 and len(self.categories) > 0:
             for elt in self.stores:
@@ -85,7 +85,6 @@ class Product:
                     (store_id, product_id) VALUES (%s, %s)"""
                     cur.execute(sql, (int(id), int(last_product_id)))
                     Database.databaseConnection.commit()
-                    cur.close()
 
             for elt in self.categories:
                 cur.execute(""" select id from categories
@@ -96,7 +95,6 @@ class Product:
                     (category_id, product_id) VALUES (%s, %s) """
                     cur.execute(sql, (int(id), int(last_product_id)))
                     Database.databaseConnection.commit()
-                    cur.close()
 
     @staticmethod
     def get(product_id):
@@ -118,7 +116,6 @@ class Product:
                            product[4],
                            None,
                            None)
-        cur.close()
         return products
 
     @staticmethod
@@ -149,7 +146,6 @@ class Product:
             products['product'] = Product.get(id[0])
             i += 1
             products_with_id.append(products)
-        cur.close()
         return products_with_id
 
     def display(self):

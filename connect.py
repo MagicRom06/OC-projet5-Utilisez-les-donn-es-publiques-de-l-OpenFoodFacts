@@ -54,7 +54,6 @@ class Database:
         cur = Database.createCursor()
         cur.execute(" SELECT * from " + table)
         entries = cur.fetchall()
-        cur.close()
         return entries
 
     @staticmethod
@@ -84,3 +83,10 @@ class Database:
                 WHERE id = %s""", (product[0],))
                 Database.databaseConnection.commit()
         cur.close()
+
+    def is_empty(self):
+        cur = self.createCursor()
+        cur.execute(""" SELECT id from products limit 1 """)
+        entries = cur.fetchone()
+        if not entries:
+            return True
