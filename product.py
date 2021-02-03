@@ -146,6 +146,7 @@ class Product:
             products['product'] = Product.get(id[0])
             i += 1
             products_with_id.append(products)
+        Database.closeCursor()
         return products_with_id
 
     def display(self):

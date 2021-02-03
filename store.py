@@ -34,6 +34,7 @@ class Store:
         val = (self.name, )
         cur.execute(sql, val)
         Database.databaseConnection.commit()
+        Database.closeCursor()
         print(cur.rowcount, "record inserted.")
 
     @staticmethod
@@ -49,4 +50,5 @@ class Store:
             ON stores.id = stores_products.store_id
         WHERE product_id = %s""", (product_id,))
         stores = [''.join(x) for x in cur.fetchall()]
+        Database.closeCursor()
         return stores

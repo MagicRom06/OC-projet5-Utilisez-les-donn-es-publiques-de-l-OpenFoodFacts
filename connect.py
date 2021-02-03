@@ -46,6 +46,13 @@ class Database:
         return Database.databaseConnection.cursor(buffered=True)
 
     @staticmethod
+    def closeCursor():
+        """
+        close cursor
+        """
+        return Database.createCursor().close()
+
+    @staticmethod
     def load(table):
         """
         Used for load table from database
@@ -85,6 +92,9 @@ class Database:
         cur.close()
 
     def is_empty(self):
+        """
+        check if the table products is empty
+        """
         cur = self.createCursor()
         cur.execute(""" SELECT id from products limit 1 """)
         entries = cur.fetchone()
