@@ -85,6 +85,7 @@ class Product:
                     (store_id, product_id) VALUES (%s, %s)"""
                     cur.execute(sql, (int(id), int(last_product_id)))
                     Database.databaseConnection.commit()
+                    cur.close()
 
             for elt in self.categories:
                 cur.execute(""" select id from categories
@@ -95,6 +96,8 @@ class Product:
                     (category_id, product_id) VALUES (%s, %s) """
                     cur.execute(sql, (int(id), int(last_product_id)))
                     Database.databaseConnection.commit()
+                    cur.close()
+        cur.close()
 
     @staticmethod
     def get(product_id):
@@ -116,6 +119,7 @@ class Product:
                            product[4],
                            None,
                            None)
+        cur.close()
         return products
 
     @staticmethod
@@ -146,7 +150,7 @@ class Product:
             products['product'] = Product.get(id[0])
             i += 1
             products_with_id.append(products)
-        Database.closeCursor()
+        cur.close()
         return products_with_id
 
     def display(self):

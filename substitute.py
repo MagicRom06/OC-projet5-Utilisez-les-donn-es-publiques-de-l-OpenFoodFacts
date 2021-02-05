@@ -37,7 +37,7 @@ class Substitute:
             substituts_with_id['product'] = Product.get(elt[0])
             substitute.append(substituts_with_id)
             i += 1
-        Database.closeCursor()
+        cur.close()
         return substitute
 
     @staticmethod
@@ -63,7 +63,7 @@ class Substitute:
                self.product_id)
         cur.execute(sql, val)
         Database.databaseConnection.commit()
-        Database.closeCursor()
+        cur.close()
 
     @staticmethod
     def load():
